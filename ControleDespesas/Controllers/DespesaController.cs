@@ -1,4 +1,6 @@
-﻿using ControleDespesas.Models;
+﻿using ControleDespesas.DTOs;
+using ControleDespesas.IServices;
+using ControleDespesas.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,20 +9,62 @@ namespace ControleDespesas.Controllers
     public class DespesaController : Controller
     {
         private readonly ILogger<DespesaController> _logger;
+        private readonly IDespesasService _despesasService;
 
-        public DespesaController(ILogger<DespesaController> logger)
+        public DespesaController(ILogger<DespesaController> logger, IDespesasService despesasService)
         {
             _logger = logger;
+            _despesasService = despesasService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var listarDespesasDTO = new ListarDespesasDTO();
+            listarDespesasDTO.Items = await _despesasService.FindBy(listarDespesasDTO.DataInicial, 
+                                                                    listarDespesasDTO.DataFinal);
+            return View(listarDespesasDTO);
         }
 
-        public IActionResult Privacy()
+        [HttpPost]
+        public async Task<IActionResult> Index(ListarDespesasDTO listarDespesasDTO)
         {
-            return View();
+            try
+            {
+                listarDespesasDTO.Items = await _despesasService.FindBy(listarDespesasDTO.DataInicial,
+                                                                    listarDespesasDTO.DataFinal);
+                return View(listarDespesasDTO);
+
+            }
+            catch (Exception e)
+            {
+
+                ModelState.AddModelError("CustomError", e.Message);
+                return View(listarDespesasDTO);
+            }
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            var criarDespesasDTO = new CriarDespesasDTO();
+            
+            return View(criarDespesasDTO);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CriarDespesasDTO criarDespesasDTO)
+        {
+            try
+            {
+                await _despesasService.Create(criarDespesasDTO);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", ex.Message);
+                return View(criarDespesasDTO);
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

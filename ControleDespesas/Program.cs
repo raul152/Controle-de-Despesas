@@ -1,7 +1,11 @@
 using ControleDespesas.Infraestrutura.BancoDeDados;
+using ControleDespesas.IServices;
+using ControleDespesas.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DespesasContext>();
+
+builder.Services.AddScoped<IDespesasService, DespesasService>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

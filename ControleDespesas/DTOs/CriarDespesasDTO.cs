@@ -4,6 +4,11 @@ namespace ControleDespesas.DTOs
 {
     public class CriarDespesasDTO
     {
+        public CriarDespesasDTO()
+        {
+            Data = DateTime.Now;
+        }
+
         [Required(ErrorMessage ="A descrição é necessária!")]
         public string Descricao { get; set; }
 

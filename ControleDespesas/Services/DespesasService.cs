@@ -1,10 +1,11 @@
 ﻿using ControleDespesas.Infraestrutura.BancoDeDados;
+using ControleDespesas.IServices;
 using ControleDespesas.Models.Despesas;
 using Microsoft.EntityFrameworkCore;
 
 namespace ControleDespesas.Services
 {
-    public class DespesasService
+    public class DespesasService : IDespesasService
     {
         private readonly DespesasContext _context;
 
